@@ -1,0 +1,11 @@
+# Rebuilt on launch from Icons\Cursor.png — not worth tracking.
+CursorMarker.ico
+
+# Whatever settings you last had open.
+CursorMarker.ini
+
+# Your generated scripts, cursors and presets.
+Export/*
+!Export/.gitkeep
+Presets/*
+!Presets/.gitkeep
