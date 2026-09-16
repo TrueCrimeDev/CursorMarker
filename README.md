@@ -52,8 +52,9 @@ SomeFolder\
 **Give yourself a big obvious pointer**
 
 1. On the **Cursor** tab pick a design and a colour; the preview updates as you go.
-2. **Apply to system** makes it your real mouse pointer. **Restore default** undoes it,
-   and so does closing the window — you can't get stuck with a pointer you hate.
+2. **Use this pointer** makes it your real mouse pointer. The same button turns it back
+   off, and so does closing the window — you can't get stuck with a pointer you hate.
+3. Leave it on and keep tweaking: the design changes land on your real pointer as you go.
 
 Your settings are remembered on their own in `CursorMarker.ini`. **Save preset** keeps a
 whole named setup in `Presets\`, so you can switch between looks.
@@ -124,7 +125,8 @@ slots carry the hotspot instead.
 **Applying to the system is reversible.** `SetSystemCursor` changes the pointer for the
 whole session, so:
 
-- `Restore default` on the Cursor tab, or the tray menu, puts it back immediately.
+- **Use this pointer** is a toggle — the same button that switched it on switches it
+  off, so the way back is never somewhere else. The tray menu has a restore item too.
 - Closing CursorMarker restores it automatically.
 - Exported scripts restore on exit **and** bind `Ctrl+Alt+F12` as a manual undo in case
   the script is ever killed abruptly.

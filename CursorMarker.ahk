@@ -48,6 +48,7 @@ class CursorMarker {
     static previewBig := 0
     static previewReal := 0
     static hotLabel := 0
+    static cursorToggle := 0
     static presetList := 0
     static presetName := 0
     static status := 0
@@ -256,16 +257,16 @@ class CursorMarker {
 
         saveBtn := g.Add("Button", Format("x{} y{} w110 h32", a, y), "Save .cur…")
         saveBtn.OnEvent("Click", ObjBindMethod(CursorMarker, "OnSaveCur"))
-        applyBtn := g.Add("Button", Format("x{} y{} w120 h32", a + 118, y), "Apply to system")
-        applyBtn.OnEvent("Click", ObjBindMethod(CursorMarker, "OnApplyCursor"))
-        restoreBtn := g.Add("Button", Format("x{} y{} w112 h32", a + 246, y), "Restore default")
-        restoreBtn.OnEvent("Click", ObjBindMethod(CursorMarker, "OnRestoreCursor"))
+        CursorMarker.cursorToggle := g.Add("Button", Format("x{} y{} w240 h32", a + 118, y), "Use this pointer")
+        CursorMarker.cursorToggle.OnEvent("Click", ObjBindMethod(CursorMarker, "OnToggleCursor"))
 
         note := "The click point is the exact pixel that does the clicking — "
-              . "leave it at -1 to let the design choose. `"Apply to system`" makes "
-              . "this your real mouse pointer; `"Restore default`" puts the normal "
-              . "one back, and so does closing this window."
-        g.Add("Text", Format("x{} y{} w340 h58", a, y + 40), note)
+              . "leave it at -1 to let the design choose.`n`n"
+              . "`"Use this pointer`" swaps your real mouse pointer for this one, and "
+              . "the same button turns it back off. Changing the design while it is on "
+              . "updates your pointer straight away. Closing this window also puts the "
+              . "normal pointer back, so you cannot get stuck with it."
+        g.Add("Text", Format("x{} y{} w340 h80", a, y + 40), note)
 
         g.Add("Text", Format("x{} y{} w260 h20 +0x200", b, CursorMarker.TOP), "Preview — scaled up")
         CursorMarker.previewBig := g.Add("Picture", Format("x{} y{} w260 h260 Background141414", b, CursorMarker.TOP + 24))
@@ -529,6 +530,14 @@ class CursorMarker {
         if HighlightEngine.Active
             HighlightEngine.Refresh()
         CursorMarker.RefreshPreview()
+        ; While the pointer is switched on, a design change should land on the
+        ; real pointer too — otherwise the preview and the pointer disagree.
+        if CursorPainter.applied {
+            try
+                CursorMarker.ApplyCursorNow()
+            catch Error as err
+                CursorMarker.Say("Could not update the pointer: " err.Message)
+        }
         return 0
     }
 
@@ -701,22 +710,48 @@ class CursorMarker {
         CursorMarker.Log("Cursor written: " path)
     }
 
-    static OnApplyCursor(*) {
+    static CursorFilePath() =>
+        CursorMarker.exportDir "\" CursorMarker.SafeName(MarkerConfig.Get("Exp.Name")) ".cur"
+
+    static ApplyCursorNow() {
+        path := CursorMarker.CursorFilePath()
+        CursorPainter.SaveCur(path, CursorMarker.CursorSpec())
+        CursorPainter.ApplySystem(path, MarkerConfig.Get("Cur.Target"))
+        return path
+    }
+
+    ; One button for both directions, so there is never a state where the pointer
+    ; has been changed and the way back is not the thing you just pressed.
+    static OnToggleCursor(*) {
         CursorMarker.Collect()
-        path := CursorMarker.exportDir "\" CursorMarker.SafeName(MarkerConfig.Get("Exp.Name")) ".cur"
-        try {
-            CursorPainter.SaveCur(path, CursorMarker.CursorSpec())
-            CursorPainter.ApplySystem(path, MarkerConfig.Get("Cur.Target"))
-        } catch Error as err {
-            CursorMarker.Say("Could not apply: " err.Message)
+        if CursorPainter.applied {
+            CursorPainter.RestoreSystem()
+            CursorMarker.RefreshCursorButton()
+            CursorMarker.Say("Your normal pointer is back.")
             return
         }
-        CursorMarker.Log("Cursor applied to " MarkerConfig.Get("Cur.Target") ": " path)
-        CursorMarker.Say("Pointer swapped. Restore default — or just closing this window — puts it back.")
+        try
+            path := CursorMarker.ApplyCursorNow()
+        catch Error as err {
+            CursorMarker.Say("Could not use that pointer: " err.Message)
+            return
+        }
+        CursorMarker.RefreshCursorButton()
+        CursorMarker.Log("Pointer applied to " MarkerConfig.Get("Cur.Target") ": " path)
+        CursorMarker.Say("That is your pointer now — press the button again to undo it.")
+    }
+
+    static RefreshCursorButton() {
+        if !CursorMarker.cursorToggle
+            return
+        CursorMarker.cursorToggle.Text := CursorPainter.applied
+            ? "Stop using this pointer"
+            : "Use this pointer"
     }
 
     static OnRestoreCursor(*) {
         CursorPainter.RestoreSystem()
+        CursorMarker.RefreshCursorButton()
         CursorMarker.Say("System pointers restored from your own scheme.")
     }
 
