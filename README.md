@@ -6,12 +6,25 @@ Makes your mouse easy to follow in a screen recording.
 
 ## Download
 
-Get **CursorMarker.exe** from the
-[latest release](https://github.com/TrueCrimeDev/CursorMarker/releases/latest) and
-double-click it. Nothing to install — AutoHotkey is built in.
+**1.** Open the [latest release](https://github.com/TrueCrimeDev/CursorMarker/releases/latest)
+and click **CursorMarker.exe** under *Assets*:
 
-Windows will probably warn you, and your antivirus might too.
-[Here's why](#why-windows-might-warn-you), and how to check for yourself.
+![The GitHub release page, with the CursorMarker.exe download link highlighted](docs/download-1-release.png)
+
+**2.** Double-click the file you just downloaded. Windows will almost certainly stop you
+the first time — click **More info**:
+
+![The Windows SmartScreen warning, with the More info link highlighted](docs/download-2-smartscreen.png)
+
+**3.** Now a **Run anyway** button appears. Click it:
+
+![The same warning expanded, showing the Run anyway button highlighted](docs/download-3-runanyway.png)
+
+That's it — nothing to install, AutoHotkey is built in.
+
+Being stopped by a full-screen blue warning is a perfectly good reason to pause and ask
+what's going on, so [here's why it happens](#why-windows-might-warn-you), and how to
+check the file for yourself before you run it.
 
 ## What it does
 
