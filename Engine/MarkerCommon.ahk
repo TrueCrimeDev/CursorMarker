@@ -94,7 +94,7 @@ class MarkerConfig {
         d["Cur.HotY"] := -1
         d["Cur.Target"] := "Normal arrow"
 
-        d["Exp.Name"] := "MyLoupe"
+        d["Exp.Name"] := "MySetup"
         d["Exp.Loupe"] := 1
         d["Exp.Highlight"] := 0
         d["Exp.Cursor"] := 0

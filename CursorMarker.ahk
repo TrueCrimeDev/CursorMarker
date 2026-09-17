@@ -279,20 +279,18 @@ class CursorMarker {
         CursorMarker.Choice(g, "Cur.Target", a, y, "Replaces"
                           , ["The normal arrow", "The crosshair", "The hand", "The text beam", "All of them"]
                           , CursorPainter.Targets)
-        y += CursorMarker.ROW + 8
+        y += CursorMarker.ROW
 
         saveBtn := g.Add("Button", Format("x{} y{} w110 h32", a, y), "Save .cur…")
         saveBtn.OnEvent("Click", ObjBindMethod(CursorMarker, "OnSaveCur"))
         CursorMarker.cursorToggle := g.Add("Button", Format("x{} y{} w240 h32", a + 118, y), "Use this pointer")
         CursorMarker.cursorToggle.OnEvent("Click", ObjBindMethod(CursorMarker, "OnToggleCursor"))
 
-        note := "The click point is the exact pixel that does the clicking — "
-              . "leave it at -1 to let the design choose.`n`n"
-              . "`"Use this pointer`" swaps your real mouse pointer for this one, and "
-              . "the same button turns it back off. Changing the design while it is on "
-              . "updates your pointer straight away. Closing this window also puts the "
-              . "normal pointer back, so you cannot get stuck with it."
-        g.Add("Text", Format("x{} y{} w340 h80", a, y + 40), note)
+        note := "The click point is the pixel that does the clicking — leave it at -1 "
+              . "to let the design choose. `"Use this pointer`" swaps your real pointer "
+              . "for this one and the same button turns it off; so does closing this "
+              . "window, so you cannot get stuck with it."
+        g.Add("Text", Format("x{} y{} w340 h70", a, y + 40), note)
 
         g.Add("Text", Format("x{} y{} w260 h20 +0x200", b, CursorMarker.TOP), "Preview — scaled up")
         CursorMarker.previewBig := g.Add("Picture", Format("x{} y{} w260 h260 Background141414", b, CursorMarker.TOP + 24))

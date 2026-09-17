@@ -45,6 +45,41 @@ SomeFolder\
 | **Highlight** | A coloured ring around the mouse so viewers can follow it, plus a ripple wherever you click, in a different colour per button. |
 | **Export** | Turns whatever you have set up into a single `.ahk` file that runs on its own. |
 
+## What it looks like
+
+The magnifier parked beside the pointer, so the small print stays readable without
+zooming the whole screen — and without covering the thing it is reading:
+
+![The magnifier enlarging a table of figures beside the mouse pointer](docs/magnifier-in-action.png)
+
+The highlight: a ring that follows the mouse, and a ripple wherever you click, in a
+different colour for each button.
+
+![A coloured ring around the pointer with a click ripple expanding from it](docs/highlight-in-action.png)
+
+<details>
+<summary><b>The window itself — all four tabs</b></summary>
+
+<br>
+
+**Magnifier**
+
+![The Magnifier tab](docs/magnifier-tab.png)
+
+**Cursor**
+
+![The Cursor tab](docs/cursor-tab.png)
+
+**Highlight**
+
+![The Highlight tab](docs/highlight-tab.png)
+
+**Export**
+
+![The Export tab](docs/export-tab.png)
+
+</details>
+
 ## Quick start
 
 **Make your mouse easy to follow in a recording**
