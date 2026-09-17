@@ -4,13 +4,27 @@ Three tools that make your mouse easy to follow in a screen recording, a window 
 them up in, and a button that turns your settings into a script you can just
 double-click.
 
-## Requirements
+## Download
+
+Grab **CursorMarker.exe** from the
+[latest release](https://github.com/TrueCrimeDev/CursorMarker/releases/latest) and
+double-click it. Nothing to install, and you do **not** need AutoHotkey — it is built in,
+dark window and all.
+
+A few things worth knowing about the exe:
+
+- It keeps its settings, presets and exported scripts in `%AppData%\CursorMarker`, so it
+  never scatters files into whatever folder you ran it from.
+- Windows SmartScreen will probably warn the first time — it's an unsigned exe off the
+  internet. **More info → Run anyway.** Some antivirus engines flag AutoHotkey-compiled
+  exes generically; if that bothers you, run from source instead.
+
+## Running from source instead
 
 - Windows 10 or 11.
 - AutoHotkey **v2.1-alpha.30 or newer** — stock alpha.30/.31 is fine.
 
-Download or clone the repo, then run `CursorMarker.ahk`. Nothing to install, nothing to
-configure.
+Clone the repo and run `CursorMarker.ahk`. Nothing to install, nothing to configure.
 
 **Dark mode is optional.** Put [`DarkModeModular.ahk`](https://github.com/TrueCrimeDev/DarkMode)
 in a `Lib` folder *next to* the CursorMarker folder and the window turns dark. Without it

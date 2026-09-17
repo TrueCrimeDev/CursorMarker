@@ -61,16 +61,42 @@ class CursorMarker {
     static exportDir := ""
     static presetDir := ""
 
-    ; Everything hangs off this file's own folder rather than A_ScriptDir, so the
-    ; studio keeps its settings, presets and exports together even when some other
-    ; script is the entry point.
-    static Home => RegExReplace(A_LineFile, "\\[^\\]+$")
+    ; Run from source, everything hangs off this file's own folder rather than
+    ; A_ScriptDir, so the studio keeps its settings, presets and exports together
+    ; even when some other script is the entry point.
+    ;
+    ; Compiled, A_LineFile is "*#1" — a resource marker, not a path — so there is
+    ; nothing to hang anything off. A single exe should not scatter files into
+    ; whatever folder it was double-clicked from either, so it uses AppData.
+    static Home => A_IsCompiled ? A_AppData "\CursorMarker" : RegExReplace(A_LineFile, "\\[^\\]+$")
+
+    ; The exporter reads the two engine files to inline them, and the icon builder
+    ; reads the artwork. A compiled exe has neither beside it, so both ride along
+    ; inside the exe and are unpacked once on first run.
+    static Unpack() {
+        if !A_IsCompiled
+            return
+        for sub in ["Engine", "Icons"] {
+            if !DirExist(CursorMarker.Home "\" sub)
+                DirCreate(CursorMarker.Home "\" sub)
+        }
+        FileInstall("Engine\LoupeEngine.ahk", CursorMarker.Home "\Engine\LoupeEngine.ahk", 1)
+        FileInstall("Engine\HighlightEngine.ahk", CursorMarker.Home "\Engine\HighlightEngine.ahk", 1)
+        FileInstall("Icons\Cursor.png", CursorMarker.Home "\Icons\Cursor.png", 1)
+    }
 
     static Run() {
         ; A shown Gui normally keeps the script alive, but that is not a promise
         ; worth betting the window on — without this, the process can end the
         ; moment AHK decides it has nothing left to do.
         Persistent
+        if !DirExist(CursorMarker.Home)
+            DirCreate(CursorMarker.Home)
+        CursorMarker.Unpack()
+        ; Both helpers locate themselves from their own source file, which a
+        ; compiled build does not have — point them at the real folder instead.
+        MarkerIcon.Root := CursorMarker.Home
+        ScriptExporter.Root := CursorMarker.Home
         CursorMarker.iniPath := CursorMarker.Home "\CursorMarker.ini"
         CursorMarker.iconPath := CursorMarker.Home "\CursorMarker.ico"
         CursorMarker.exportDir := CursorMarker.Home "\Export"

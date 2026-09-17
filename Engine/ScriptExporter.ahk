@@ -13,8 +13,12 @@
 
 class ScriptExporter {
     ; Where the engine sources live, resolved from this file rather than from
-    ; A_ScriptDir — the entry script is not always CursorMarker.ahk.
-    static EngineDir => RegExReplace(A_LineFile, "\\[^\\]+$")
+    ; A_ScriptDir — the entry script is not always CursorMarker.ahk. A compiled
+    ; build has no source path, so the app sets Root and the files are unpacked
+    ; there instead.
+    static Root := ""
+    static EngineDir => ScriptExporter.Root != "" ? ScriptExporter.Root "\Engine"
+                                                  : RegExReplace(A_LineFile, "\\[^\\]+$")
 
     static Build(parts, engineDir := "") {
         if (engineDir = "")

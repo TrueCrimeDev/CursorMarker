@@ -22,8 +22,11 @@ class MarkerIcon {
     static hBig := 0
     static source := 0
 
-    ; Engine\MarkerIcon.ahk -> the studio folder that owns Icons\.
-    static Home => RegExReplace(A_LineFile, "\\[^\\]+\\[^\\]+$")
+    ; Engine\MarkerIcon.ahk -> the studio folder that owns Icons\. A compiled
+    ; build has no source path to walk up from, so the app sets Root instead.
+    static Root := ""
+    static Home => MarkerIcon.Root != "" ? MarkerIcon.Root
+                                         : RegExReplace(A_LineFile, "\\[^\\]+\\[^\\]+$")
     static SourcePath => MarkerIcon.Home "\Icons\Cursor.png"
 
     static Apply(hwnd, path) {
