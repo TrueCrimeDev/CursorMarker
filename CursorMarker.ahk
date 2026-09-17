@@ -48,6 +48,7 @@ class CursorMarker {
     static previewBig := 0
     static previewReal := 0
     static hotLabel := 0
+    static tabs := 0
     static cursorToggle := 0
     static presetList := 0
     static presetName := 0
@@ -150,6 +151,11 @@ class CursorMarker {
         tabs.UseTab(4)
         CursorMarker.BuildExportTab(g)
         tabs.UseTab()
+        ; Switching tabs shows the incoming tab's controls but never invalidates
+        ; them, so the owner-drawn ones come back blank until something else
+        ; happens to repaint them. Force the repaint on every tab change.
+        tabs.OnEvent("Change", ObjBindMethod(CursorMarker, "OnTabChange"))
+        CursorMarker.tabs := tabs
 
         CursorMarker.status := g.Add("Text", "x26 y562 w404 h22 +0x200", "")
         reset := g.Add("Button", "x440 y556 w110 h30", "Reset defaults")
@@ -397,6 +403,13 @@ class CursorMarker {
         CursorMarker.logBox := g.Add("Edit", "x26 y320 w728 h206 ReadOnly Multi +VScroll -Wrap")
     }
 
+
+    static OnTabChange(*) {
+        if !CursorMarker.FormAlive()
+            return
+        ; RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN | RDW_UPDATENOW
+        DllCall("User32\RedrawWindow", "Ptr", CursorMarker.gui.Hwnd, "Ptr", 0, "Ptr", 0, "UInt", 0x0185)
+    }
 
     static Label(g, x, y, w, text) {
         return g.Add("Text", Format("x{} y{} w{} h24 +0x200", x, y, w), text)
