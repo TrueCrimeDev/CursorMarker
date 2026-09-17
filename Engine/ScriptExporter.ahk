@@ -162,6 +162,7 @@ class ScriptExporter {
         if (leaf = "")
             leaf := "CursorMarker.cur"
         target := MarkerConfig.Get("Cur.Target")
+        size := Max(8, MarkerConfig.Num("Cur.Size"))
         ids := ""
         for id in CursorPainter.TargetIds(target)
             ids .= (ids = "" ? "" : ", ") id
@@ -176,13 +177,17 @@ class ScriptExporter {
         lines.Push("")
         lines.Push("MarkerApplyCursor() {")
         lines.Push("    global MarkerCursorFile")
-        lines.Push('    source := DllCall("User32\LoadCursorFromFile", "Str", MarkerCursorFile, "Ptr")')
+        ; Same trap as CursorPainter.ApplySystem: LoadCursorFromFile would pin the
+        ; pointer to 32x32, so the exported script loads at the designed size too.
+        lines.Push('    source := DllCall("User32\LoadImageW", "Ptr", 0, "Str", MarkerCursorFile, "UInt", 2'
+                 . ', "Int", ' size ', "Int", ' size ', "UInt", 0x10, "Ptr")')
         lines.Push("    if !source {")
         lines.Push('        MsgBox("Could not load " MarkerCursorFile, "Cursor swap", 0x30)')
         lines.Push("        return")
         lines.Push("    }")
         lines.Push("    for id in [" ids "] {")
-        lines.Push('        copy := DllCall("User32\CopyImage", "Ptr", source, "UInt", 2, "Int", 0, "Int", 0, "UInt", 0, "Ptr")')
+        lines.Push('        copy := DllCall("User32\CopyImage", "Ptr", source, "UInt", 2'
+                 . ', "Int", ' size ', "Int", ' size ', "UInt", 0, "Ptr")')
         lines.Push("        if !copy")
         lines.Push("            continue")
         lines.Push('        if !DllCall("User32\SetSystemCursor", "Ptr", copy, "UInt", id, "Int")')

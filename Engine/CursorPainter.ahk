@@ -289,14 +289,43 @@ class CursorPainter {
         }
     }
 
+    ; The size the .cur declares, read from the first directory entry. A stored 0
+    ; means 256, which is how the format encodes its largest size.
+    static CurSize(path) {
+        file := FileOpen(path, "r")
+        if !file
+            return 0
+        try {
+            header := Buffer(8, 0)
+            if (file.RawRead(header, 8) < 8)
+                return 0
+            if (NumGet(header, 2, "UShort") != 2)          ; idType 2 = cursor
+                return 0
+            width := NumGet(header, 6, "UChar")
+            return width ? width : 256
+        } finally
+            file.Close()
+    }
+
     ; SetSystemCursor consumes the handle it is given, so each slot gets its own
     ; copy and anything it refuses is destroyed here rather than leaked.
+    ;
+    ; Loaded with LoadImage at an explicit size, NOT LoadCursorFromFile: that one
+    ; is LoadImage with LR_DEFAULTSIZE, which forces SM_CXCURSOR (32x32) whatever
+    ; the file holds — so every design used to arrive the same size no matter what
+    ; the Size slider said.
     static ApplySystem(path, targetName) {
-        source := DllCall("User32\LoadCursorFromFile", "Str", path, "Ptr")
+        size := CursorPainter.CurSize(path)
+        if size
+            source := DllCall("User32\LoadImageW", "Ptr", 0, "Str", path, "UInt", 2
+                            , "Int", size, "Int", size, "UInt", 0x10, "Ptr")
+        else
+            source := DllCall("User32\LoadCursorFromFile", "Str", path, "Ptr")
         if !source
-            throw OSError("LoadCursorFromFile could not read " path, -1)
+            throw OSError("Could not load the cursor from " path, -1)
         for id in CursorPainter.TargetIds(targetName) {
-            copy := DllCall("User32\CopyImage", "Ptr", source, "UInt", 2, "Int", 0, "Int", 0, "UInt", 0, "Ptr")
+            copy := DllCall("User32\CopyImage", "Ptr", source, "UInt", 2
+                          , "Int", size, "Int", size, "UInt", 0, "Ptr")
             if !copy
                 continue
             if !DllCall("User32\SetSystemCursor", "Ptr", copy, "UInt", id, "Int")
